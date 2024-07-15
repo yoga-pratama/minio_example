@@ -1,7 +1,7 @@
 const multer = require("multer");
 /* const multerS3 = require("multer-s3"); */
 const minio = require('minio');
-const bucket = "elhp-dev";
+const bucket = process.env.MINIO_BUCKET;
 const upload = multer();
 
 const minioClient = new minio.Client({
