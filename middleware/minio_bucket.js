@@ -6,7 +6,7 @@ const upload = multer();
 
 const minioClient = new minio.Client({
     endPoint: process.env.MINIO_ENDPOINT,
-    port: 90,
+    port: parseInt(process.env.MINIO_PORT, 10),
     useSSL: false,
     accessKey: process.env.MINIO_ACCESS_KEY,
     secretKey: process.env.MINIO_SECRET_KEY,
@@ -15,16 +15,19 @@ const minioClient = new minio.Client({
 
 const uploadFile = async (req, res, next) => {
     const file = req.file;
-    console.log(process.env.MINIO_ACCESS_KEY);
+    //console.log(process.env.MINIO_ACCESS_KEY);
     if (!file) {
         return res.status(400).json({ message: "No file uploaded" });
     }
-    
+
     const { originalname, buffer } = file;
 
     try {
 
-        const filePath = `photos/${originalname}`;
+
+        // get date format yyyy-mm-dd
+        const currentDate = new Date().toISOString().split('T')[0];
+        const filePath = `${currentDate}/${originalname}`;
 
         await minioClient.putObject(bucket, filePath, buffer);
         res.status(200).json({ message: "File uploaded successfully" });
